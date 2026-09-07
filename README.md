@@ -130,7 +130,7 @@ Theme Toggle Click
 ## 11. GitHub API
 
 요청 URL:
-`https://api.github.com/users/{username}/repos`
+`https://api.github.com/users/SSUNOWL/repos`
 
 적용 내용:
 
@@ -187,17 +187,21 @@ Theme Toggle Click
 현재 작업 환경에서 `git remote` 확인이 불가하여 정확한 origin 정보를 못 확인했습니다.  
 리포지토리 확인 후 아래 형식으로 대체하세요.
 
-`https://USERNAME.github.io/REPOSITORY/`
+`https://SSUNOWL.github.io/REPOSITORY/`
 
 ## 16. Screenshots
+### Desktop
 
-최종 제출 전 아래 파일이 필요합니다.
+![Desktop Screenshot](./images/screenshot-desktop.png)
 
-- `./images/screenshot-desktop.png`
-- `./images/screenshot-mobile.png`
-- `./images/screenshot-dark.png`
+### Mobile
 
-현재 파일이 아직 준비되지 않았으므로 실제 캡처가 필요합니다.
+![Mobile Screenshot](./images/screenshot-mobile.png)
+
+### Dark Mode
+
+![Dark Mode Screenshot](./images/screenshot-dark.png)
+
 
 ## 17. 배운 점
 
