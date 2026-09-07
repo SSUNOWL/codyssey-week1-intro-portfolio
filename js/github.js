@@ -1,4 +1,4 @@
-const GITHUB_USERNAME = '{{GITHUB_USERNAME}}';
+const GITHUB_USERNAME = 'SSUNOWL';
 const projectState = {
   status: 'idle',
   repositories: [],
@@ -117,7 +117,7 @@ const fetchProjects = async () => {
     setProjectState({
       status: 'error',
       repositories: [],
-      error: 'GITHUB 사용자 이름이 설정되지 않았습니다. {{GITHUB_USERNAME}}를 실제 계정명으로 바꿔주세요.',
+      error: 'GITHUB 사용자 이름이 설정되지 않았습니다. SSUNOWL를 실제 계정명으로 바꿔주세요.',
     });
     renderProjects();
     return;
