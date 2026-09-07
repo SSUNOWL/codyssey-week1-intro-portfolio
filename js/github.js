@@ -1,11 +1,36 @@
 const GITHUB_USERNAME = 'SSUNOWL';
+const FILTER_ALL = 'All';
+
 const projectState = {
   status: 'idle',
   repositories: [],
+  filteredRepositories: [],
   error: null,
+  selectedLanguage: FILTER_ALL,
+  availableLanguages: [FILTER_ALL],
 };
 
 const projectStatus = document.querySelector('#project-status');
+const resolveProjectFilters = () => {
+  const existingFilterContainer = document.querySelector('#project-filters');
+  if (existingFilterContainer) {
+    return existingFilterContainer;
+  }
+
+  if (!projectStatus || !projectStatus.parentElement) {
+    return null;
+  }
+
+  const fallbackContainer = document.createElement('div');
+  fallbackContainer.id = 'project-filters';
+  fallbackContainer.className = 'project-filters';
+  fallbackContainer.setAttribute('aria-label', '프로젝트 언어 필터');
+  projectStatus.parentElement.insertBefore(fallbackContainer, projectStatus.nextSibling);
+
+  return fallbackContainer;
+};
+
+const projectFilters = resolveProjectFilters();
 const projectList = document.querySelector('#project-list');
 
 const escapeHTML = (value) => {
@@ -24,7 +49,63 @@ const escapeHTML = (value) => {
 const setProjectState = (nextState) => {
   projectState.status = nextState.status ?? projectState.status;
   projectState.repositories = nextState.repositories ?? projectState.repositories;
+  projectState.filteredRepositories = nextState.filteredRepositories ?? projectState.filteredRepositories;
   projectState.error = nextState.error ?? null;
+  projectState.selectedLanguage = nextState.selectedLanguage ?? projectState.selectedLanguage;
+  projectState.availableLanguages = nextState.availableLanguages ?? projectState.availableLanguages;
+};
+
+const getAvailableLanguages = () => {
+  const languageSet = new Set([FILTER_ALL]);
+  projectState.repositories.forEach((repository) => {
+    if (repository.language) {
+      languageSet.add(repository.language);
+    }
+  });
+
+  return Array.from(languageSet).sort((a, b) => {
+    if (a === FILTER_ALL) return -1;
+    if (b === FILTER_ALL) return 1;
+    return a.localeCompare(b);
+  });
+};
+
+const getFilteredRepositories = () => {
+  const activeFilter = projectState.selectedLanguage;
+  return projectState.repositories.filter((repository) => {
+    if (activeFilter === FILTER_ALL) {
+      return true;
+    }
+    return repository.language === activeFilter;
+  });
+};
+
+const setFilterState = (nextLanguage) => {
+  projectState.selectedLanguage = nextLanguage || FILTER_ALL;
+};
+
+const renderLanguageFilters = () => {
+  if (!projectFilters) {
+    return;
+  }
+
+  const languages = getAvailableLanguages();
+  projectState.availableLanguages = languages;
+  projectFilters.innerHTML = '';
+
+  languages.forEach((language) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'project-filter';
+    button.textContent = language;
+    button.setAttribute('aria-pressed', String(projectState.selectedLanguage === language));
+    button.classList.toggle('active', projectState.selectedLanguage === language);
+    button.addEventListener('click', () => {
+      setFilterState(language);
+      renderProjects();
+    });
+    projectFilters.appendChild(button);
+  });
 };
 
 const renderProjects = () => {
@@ -36,6 +117,10 @@ const renderProjects = () => {
   projectStatus.innerHTML = '';
 
   if (projectState.status === 'loading') {
+    if (projectFilters) {
+      projectFilters.innerHTML = '';
+    }
+
     projectStatus.innerHTML = `
       <div class="loading">
         <div class="spinner" aria-hidden="true"></div>
@@ -47,12 +132,20 @@ const renderProjects = () => {
   }
 
   if (projectState.status === 'empty') {
+    if (projectFilters) {
+      projectFilters.innerHTML = '';
+    }
+
     projectStatus.innerHTML = `<p class="empty">표시할 프로젝트가 없습니다.</p>`;
     projectList.innerHTML = '';
     return;
   }
 
   if (projectState.status === 'error') {
+    if (projectFilters) {
+      projectFilters.innerHTML = '';
+    }
+
     projectStatus.innerHTML = `
       <p class="error">프로젝트를 불러올 수 없습니다.</p>
       <p class="error">${escapeHTML(projectState.error || '요청에 실패했습니다.')}</p>
@@ -68,7 +161,17 @@ const renderProjects = () => {
   }
 
   if (projectState.status === 'success') {
-    const cards = projectState.repositories
+    renderLanguageFilters();
+    const filteredRepositories = getFilteredRepositories();
+    setProjectState({ filteredRepositories });
+
+    if (filteredRepositories.length === 0) {
+      projectStatus.innerHTML = `<p class="empty">해당 언어의 프로젝트가 없습니다.</p>`;
+      projectList.innerHTML = '';
+      return;
+    }
+
+    const cards = filteredRepositories
       .map((repository) => {
         const {
           name = 'untitled',
@@ -117,6 +220,9 @@ const fetchProjects = async () => {
     setProjectState({
       status: 'error',
       repositories: [],
+      filteredRepositories: [],
+      selectedLanguage: FILTER_ALL,
+      availableLanguages: [FILTER_ALL],
       error: 'GITHUB 사용자 이름이 설정되지 않았습니다. SSUNOWL를 실제 계정명으로 바꿔주세요.',
     });
     renderProjects();
@@ -126,7 +232,10 @@ const fetchProjects = async () => {
   setProjectState({
     status: 'loading',
     repositories: [],
+    filteredRepositories: [],
     error: null,
+    selectedLanguage: FILTER_ALL,
+    availableLanguages: [FILTER_ALL],
   });
   renderProjects();
 
@@ -147,20 +256,35 @@ const fetchProjects = async () => {
 
     const repositories = data
       .filter((repo) => repo && repo.name)
-      .map(({ name, description, html_url, language, stargazers_count, forks_count }) => ({
-        name,
-        description,
-        html_url,
-        language,
-        stargazers_count,
-        forks_count,
-      }));
+      .map(
+        ({ name, description, html_url, language, stargazers_count, forks_count }) => ({
+          name,
+          description,
+          html_url,
+          language,
+          stargazers_count,
+          forks_count,
+        })
+      );
+    const languagesFromResponse = new Set([FILTER_ALL]);
+    repositories.forEach((repository) => {
+      if (repository.language) {
+        languagesFromResponse.add(repository.language);
+      }
+    });
+    const availableLanguages = Array.from(languagesFromResponse).sort((a, b) => {
+      if (a === FILTER_ALL) return -1;
+      if (b === FILTER_ALL) return 1;
+      return a.localeCompare(b);
+    });
 
     if (repositories.length === 0) {
       setProjectState({
         status: 'empty',
         repositories: [],
+        filteredRepositories: [],
         error: null,
+        selectedLanguage: FILTER_ALL,
       });
       renderProjects();
       return;
@@ -169,13 +293,17 @@ const fetchProjects = async () => {
     setProjectState({
       status: 'success',
       repositories,
+      filteredRepositories: repositories,
       error: null,
+      selectedLanguage: FILTER_ALL,
+      availableLanguages,
     });
     renderProjects();
   } catch (error) {
     setProjectState({
       status: 'error',
       repositories: [],
+      filteredRepositories: [],
       error: error instanceof Error ? error.message : '네트워크 연결을 확인해 주세요.',
     });
     renderProjects();

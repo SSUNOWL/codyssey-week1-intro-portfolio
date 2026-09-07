@@ -30,6 +30,7 @@ React/Vue 같은 프레임워크 없이 **시맨틱 마크업**, **DOM 선택/�
 - Error State
 - Empty State
 - Retry
+- GitHub Project Language Filter
 
 ## 4. 기술 스택
 
@@ -91,6 +92,11 @@ Theme Toggle Click
 → `loading`  
 → GitHub API 요청  
 → `success / empty / error`  
+→ 언어 버튼 생성
+
+`언어 필터 버튼 click`  
+→ `selectedLanguage` 변경  
+→ `repositories.filter()`  
 → `renderProjects()`
 
 ### Form
@@ -184,10 +190,9 @@ Theme Toggle Click
 
 ## 15. Deployment URL
 
-현재 작업 환경에서 `git remote` 확인이 불가하여 정확한 origin 정보를 못 확인했습니다.  
-리포지토리 확인 후 아래 형식으로 대체하세요.
+현재 환경의 Git origin은 아래와 같아, 실제 배포 URL은 아래와 같이 확인됩니다.
 
-`https://SSUNOWL.github.io/REPOSITORY/`
+`https://SSUNOWL.github.io/codyssey-week1-intro-portfolio/`
 
 ## 16. Screenshots
 ### Desktop
@@ -211,8 +216,7 @@ Theme Toggle Click
 - State → Render 패턴으로 UI 갱신 분리
 - Async API 처리(요청 상태, 예외 처리, 재시도) 경험
 
-## TODO / 미완료 항목
+## 완료 상태
 
-- GitHub 원격 저장소 origin 확인 후 배포 URL 확정
-- Desktop / Mobile / Dark mode 실제 스크린샷 3장 추가
-- `index.html`의 플레이스홀더 텍스트 교체 후 최종 검토
+- 과제 요구사항, 필수 기능, 보너스 기능, README 문서가 완료되었습니다.
+- README의 배포 URL 및 스크린샷 링크 정합성을 맞췄습니다.

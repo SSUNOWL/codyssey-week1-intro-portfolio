@@ -325,6 +325,34 @@ button:hover,
   padding: 2.6rem 0;
 }
 
+.project-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: var(--space-md);
+  padding-bottom: 0.2rem;
+  overflow-x: auto;
+}
+
+.project-filter {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 0.45rem 0.8rem;
+  font-weight: 600;
+}
+
+.project-filter.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.project-filter[aria-pressed='true'] {
+  background: var(--color-primary);
+  color: #fff;
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
