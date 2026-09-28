@@ -1,3 +1,4 @@
+// 입력값(values)과 오류(errors)를 분리해 입력 이벤트마다 화면을 다시 그린다.
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const formState = {
@@ -60,6 +61,7 @@ const validateField = (fieldName, value) => {
 };
 
 const setFieldError = (fieldName, message) => {
+  // 오류 문구, 시각적 테두리, aria-invalid를 같은 결과로 동기화한다.
   const state = fieldStateMap[fieldName];
   if (!state?.input || !state?.errorElement) return;
 
@@ -96,6 +98,7 @@ const validateAll = () => {
 };
 
 const syncValuesAndValidateField = (fieldName, value) => {
+  // 입력 -> values 갱신 -> 검증 -> errors 갱신 -> 오류 화면 렌더링.
   formState.values[fieldName] = value;
   formState.errors[fieldName] = validateField(fieldName, value);
   renderErrors();
@@ -114,6 +117,7 @@ const syncFormStateFromDOM = () => {
 };
 
 const resetFormState = () => {
+  // 폼을 지울 때 state도 같이 비워 DOM과 값이 어긋나지 않게 한다.
   formState.values = {
     name: '',
     email: '',
@@ -141,6 +145,7 @@ const handleFieldInput = (fieldName) => (event) => {
 };
 
 const handleSubmit = (event) => {
+  // 실제 서버 전송이 없는 검증 데모이므로 브라우저의 기본 제출을 막는다.
   event.preventDefault();
 
   syncFormStateFromDOM();

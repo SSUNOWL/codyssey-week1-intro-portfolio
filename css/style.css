@@ -1,15 +1,18 @@
 /* 1. Design Tokens / CSS Variables */
 :root {
+  /* Semantic colors: component styles use these in both themes. */
   --color-bg: #f5f7fb;
   --color-surface: #ffffff;
   --color-text: #1f2937;
   --color-muted: #5b6578;
   --color-primary: #2563eb;
   --color-primary-hover: #1e4fd1;
+  --color-on-primary: #ffffff;
   --color-border: #dbe2ef;
   --color-error: #dc2626;
   --color-success: #16a34a;
 
+  /* Shared spacing and shape keep sections and controls consistent. */
   --space-xs: 0.5rem;
   --space-sm: 0.75rem;
   --space-md: 1rem;
@@ -21,6 +24,7 @@
   --radius-lg: 1rem;
 
   --shadow-card: 0 10px 28px rgba(15, 23, 42, 0.08);
+  /* Motion and page width are shared across components. */
   --transition-fast: 0.2s ease;
   --container-width: 1120px;
   --container-padding: 1rem;
@@ -33,7 +37,10 @@
   --color-muted: #94a3b8;
   --color-primary: #60a5fa;
   --color-primary-hover: #93c5fd;
+  --color-on-primary: #0f172a;
   --color-border: #334155;
+  --color-error: #f87171;
+  --color-success: #4ade80;
   --shadow-card: 0 10px 28px rgba(2, 6, 23, 0.5);
 }
 
@@ -102,7 +109,7 @@ button,
   border: none;
   border-radius: var(--radius-md);
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   cursor: pointer;
   transition: background var(--transition-fast), transform var(--transition-fast),
     box-shadow var(--transition-fast), opacity var(--transition-fast);
@@ -114,7 +121,7 @@ input:focus-visible,
 textarea:focus-visible,
 .nav-link:focus-visible,
 #nav-menu a:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-primary), white 60%);
+  outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -180,6 +187,7 @@ button:hover,
 }
 
 .navbar .container {
+  /* One-dimensional alignment suits the logo, links, and controls. */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -227,6 +235,10 @@ button:hover,
   text-decoration: none;
   color: var(--color-text);
   padding: 0.55rem 0.65rem;
+}
+
+.nav-link[aria-current='location'] {
+  box-shadow: inset 0 -2px 0 var(--color-primary);
 }
 
 #theme-toggle {
@@ -345,15 +357,16 @@ button:hover,
 
 .project-filter.active {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 .project-filter[aria-pressed='true'] {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 .projects-grid {
+  /* Two-dimensional cards fill available columns without fixed breakpoints. */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-lg);
@@ -448,7 +461,7 @@ button:hover,
 .retry-button {
   margin-top: 0.65rem;
   padding: 0.5rem 0.9rem;
-  color: #fff;
+  color: var(--color-on-primary);
   text-decoration: none;
 }
 
@@ -571,7 +584,7 @@ footer nav {
   transform: translateY(0);
 }
 
-/* 14. Tablet - 768px */
+/* 14. Tablet - 768px: inline navigation, side-by-side About, wider cards. */
 @media (min-width: 768px) {
   .navbar .container {
     gap: var(--space-lg);
@@ -630,7 +643,7 @@ footer nav {
   }
 }
 
-/* 15. Desktop - 1024px */
+/* 15. Desktop - 1024px: roomier sections and card columns. */
 @media (min-width: 1024px) {
   #home,
   #about,

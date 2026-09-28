@@ -1,7 +1,9 @@
+// GitHub 저장소 조회와 언어 필터는 projectState를 거쳐 화면에 반영한다.
 const GITHUB_USERNAME = 'SSUNOWL';
 const FILTER_ALL = 'All';
 
 const projectState = {
+  // status: idle -> loading -> success / empty / error
   status: 'idle',
   repositories: [],
   filteredRepositories: [],
@@ -12,6 +14,7 @@ const projectState = {
 
 const projectStatus = document.querySelector('#project-status');
 const resolveProjectFilters = () => {
+  // 필터 영역이 없는 HTML에서도 버튼을 표시할 수 있게 한다.
   const existingFilterContainer = document.querySelector('#project-filters');
   if (existingFilterContainer) {
     return existingFilterContainer;
@@ -34,6 +37,7 @@ const projectFilters = resolveProjectFilters();
 const projectList = document.querySelector('#project-list');
 
 const escapeHTML = (value) => {
+  // API의 문자열은 innerHTML로 카드에 넣기 전에 HTML 특수문자를 이스케이프한다.
   const text = String(value ?? '');
   const replacements = {
     '&': '&amp;',
@@ -71,6 +75,7 @@ const getAvailableLanguages = () => {
 };
 
 const getFilteredRepositories = () => {
+  // 원본 배열은 보존하고 선택된 언어의 카드 목록만 새로 만든다.
   const activeFilter = projectState.selectedLanguage;
   return projectState.repositories.filter((repository) => {
     if (activeFilter === FILTER_ALL) {
@@ -109,6 +114,7 @@ const renderLanguageFilters = () => {
 };
 
 const renderProjects = () => {
+  // status에 따라 한 화면 상태만 그린다. 실패/빈 목록에는 카드가 남지 않는다.
   if (!projectStatus || !projectList) {
     return;
   }
@@ -209,6 +215,7 @@ const renderProjects = () => {
 
 const sanitizeErrorMessage = (status) => {
   if (status === 403 || status === 429) {
+    // Manual retry avoids repeated requests while the unauthenticated limit is active.
     return 'GitHub API 요청 한도에 도달했을 수 있습니다. 잠시 후 다시 시도해주세요.';
   }
 
